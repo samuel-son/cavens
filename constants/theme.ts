@@ -1,41 +1,62 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Premium bank-grade theme for Cavens Savings App
+ * Minimal, modern, currency-agnostic design
  */
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+// Premium palette - trusted, calm, professional
+const primaryLight = '#0D47A1';
+const primaryDark = '#42A5F5';
+const successLight = '#1B5E20';
+const successDark = '#66BB6A';
+const warningLight = '#E65100';
+const warningDark = '#FFA726';
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    text: '#1A1A2E',
+    textSecondary: '#4A4A68',
+    background: '#F8FAFC',
+    surface: '#FFFFFF',
+    surfaceElevated: '#FFFFFF',
+    tint: primaryLight,
+    primary: primaryLight,
+    success: successLight,
+    warning: warningLight,
+    error: '#B71C1C',
+    icon: '#64748B',
+    tabIconDefault: '#94A3B8',
+    tabIconSelected: primaryLight,
+    border: '#E2E8F0',
+    pinDot: primaryLight,
+    cardShadow: 'rgba(13, 71, 161, 0.08)',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    text: '#F1F5F9',
+    textSecondary: '#94A3B8',
+    background: '#0F172A',
+    surface: '#1E293B',
+    surfaceElevated: '#334155',
+    tint: primaryDark,
+    primary: primaryDark,
+    success: successDark,
+    warning: warningDark,
+    error: '#EF5350',
+    icon: '#94A3B8',
+    tabIconDefault: '#64748B',
+    tabIconSelected: primaryDark,
+    border: '#334155',
+    pinDot: primaryDark,
+    cardShadow: 'rgba(0, 0, 0, 0.3)',
   },
 };
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {
@@ -45,9 +66,26 @@ export const Fonts = Platform.select({
     mono: 'monospace',
   },
   web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+    rounded: "'SF Pro Rounded', sans-serif",
+    mono: "SFMono-Regular, Menlo, Monaco, Consolas, monospace",
   },
 });
+
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
+};
+
+export const BorderRadius = {
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  full: 9999,
+};

@@ -1,98 +1,136 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { BalanceCard } from '@/components/savings/BalanceCard';
+import { PendingCard } from '@/components/savings/PendingCard';
+import { PremiumButton } from '@/components/ui/PremiumButton';
+import { Colors } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useSavings } from '@/contexts/SavingsContext';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function DashboardScreen() {
+  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const c = Colors[colorScheme ?? 'light'];
+  const { wallet, pendingSavings, settings, addPendingSavings } = useSavings();
 
-export default function HomeScreen() {
+  const simulateIncoming = () => {
+    const received = 5000 + Math.floor(Math.random() * 20000);
+    const pct = settings.defaultSavingsPercentage;
+    const toSave = Math.round((received * pct) / 100);
+    addPendingSavings({
+      id: `pending-${Date.now()}`,
+      amountReceived: received,
+      savingsAmount: toSave,
+      percentage: pct,
+      sourceNumber: '+237 6XX XXX XXX',
+      timestamp: new Date().toISOString(),
+    });
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <ScrollView
+      style={[styles.container, { backgroundColor: c.background }]}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}>
+      <Animated.Text
+        entering={FadeInDown}
+        style={[styles.greeting, { color: c.text }]}>
+        Your Savings
+      </Animated.Text>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <BalanceCard
+        total={wallet.total}
+        flexible={wallet.flexible}
+        locked={wallet.locked}
+        currency={settings.currency}
+      />
+
+      {pendingSavings.length > 0 ? (
+        <View style={styles.section}>
+          <Animated.Text
+            entering={FadeInDown.delay(200)}
+            style={[styles.sectionTitle, { color: c.text }]}>
+            Pending
+          </Animated.Text>
+          {pendingSavings.slice(0, 5).map((item) => (
+            <PendingCard
+              key={item.id}
+              item={item}
+              currency={settings.currency}
+              onComplete={() => router.push({ pathname: '/complete-saving', params: { pendingId: item.id } })}
+            />
+          ))}
+        </View>
+      ) : null}
+
+      <View style={styles.simulate}>
+        <PremiumButton
+          title="Simulate Incoming"
+          icon="add"
+          variant="secondary"
+          onPress={simulateIncoming}
+        />
+      </View>
+
+      <View style={styles.actions}>
+        <View style={styles.actionBtn}>
+          <PremiumButton
+            title="Savings"
+            icon="account-balance-wallet"
+            variant="primary"
+            onPress={() => router.push('/savings')}
+          />
+        </View>
+        <View style={styles.actionBtn}>
+          <PremiumButton
+            title="Withdraw"
+            icon="payments"
+            variant="outline"
+            onPress={() => router.push('/withdraw')}
+          />
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  content: {
+    paddingBottom: Spacing.xxl,
+  },
+  greeting: {
+    fontSize: 28,
+    fontWeight: '800',
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.lg,
+  },
+  section: {
+    marginTop: Spacing.lg,
+    paddingHorizontal: 0,
+  },
+  simulate: {
+    paddingHorizontal: Spacing.md,
+    marginTop: Spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
+  },
+  actions: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    marginTop: Spacing.xl,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  actionBtn: {
+    flex: 1,
   },
 });
