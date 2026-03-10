@@ -7,8 +7,11 @@ interface AuthContextType {
   isAuthenticated: boolean;
   hasPin: boolean;
   isInitializing: boolean;
+  balanceRevealed: boolean;
+  setBalanceRevealed: (v: boolean) => void;
   setPin: (pin: string) => Promise<void>;
   verifyPin: (pin: string) => Promise<boolean>;
+  signOut: () => void;
   clearPin: () => Promise<void>;
 }
 
@@ -18,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [hasPin, setHasPin] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [balanceRevealed, setBalanceRevealedState] = useState(false);
 
   useEffect(() => {
     SecureStore.getItemAsync(PIN_KEY)
@@ -39,6 +43,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return valid;
   }, []);
 
+  const signOut = useCallback(() => {
+    setIsAuthenticated(false);
+    setBalanceRevealedState(false);
+  }, []);
+
+  const setBalanceRevealed = useCallback((v: boolean) => {
+    setBalanceRevealedState(v);
+  }, []);
+
   const clearPin = useCallback(async () => {
     await SecureStore.deleteItemAsync(PIN_KEY);
     setHasPin(false);
@@ -51,8 +64,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated,
         hasPin,
         isInitializing,
+        balanceRevealed,
+        setBalanceRevealed,
         setPin,
         verifyPin,
+        signOut,
         clearPin,
       }}>
       {children}

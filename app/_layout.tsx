@@ -52,6 +52,9 @@ export default function RootLayout() {
             <Stack.Screen name="withdraw" />
             <Stack.Screen name="momo" />
             <Stack.Screen name="momo-add" />
+            <Stack.Screen name="add-money" />
+            <Stack.Screen name="investment" />
+            <Stack.Screen name="store" />
           </Stack>
           <StatusBar style="auto" />
         </SavingsProvider>

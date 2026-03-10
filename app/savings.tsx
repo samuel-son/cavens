@@ -58,10 +58,18 @@ export default function SavingsScreen() {
       </View>
 
       <PremiumButton
+        title="Add Money"
+        icon="account-balance"
+        variant="primary"
+        onPress={() => router.push('/add-money')}
+        style={styles.addMoneyBtn}
+      />
+      <PremiumButton
         title="Settings"
         icon="settings"
         variant="outline"
         onPress={() => router.push('/settings')}
+        style={styles.settingsBtn}
       />
     </ScrollView>
   );
@@ -96,5 +104,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: Spacing.xs,
     textAlign: 'center',
+  },
+  addMoneyBtn: {
+    marginTop: Spacing.xl,
+  },
+  settingsBtn: {
+    marginTop: Spacing.md,
   },
 });

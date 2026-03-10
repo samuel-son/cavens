@@ -19,6 +19,7 @@ interface SavingsContextType {
   settings: UserSettings;
   addPendingSavings: (item: PendingSavings) => void;
   completePendingSavings: (id: string, mode: AccountType, lockedEndDate?: string) => void;
+  addDeposit: (amount: number, mode: AccountType, sourceLabel: string, lockedEndDate?: string) => void;
   addTransaction: (tx: SavingsTransaction) => void;
   withdraw: (amount: number, from: AccountType) => { net: number; fee: number; ok: boolean };
   updateSettings: (s: Partial<UserSettings>) => void;
@@ -43,6 +44,7 @@ const defaultContext: SavingsContextType = {
   settings: defaultSettings,
   addPendingSavings: () => {},
   completePendingSavings: () => {},
+  addDeposit: () => {},
   addTransaction: () => {},
   withdraw: () => ({ net: 0, fee: 0, ok: false }),
   isLockedDue: () => false,
@@ -96,6 +98,30 @@ export function SavingsProvider({ children }: { children: React.ReactNode }) {
       }
       return prev.filter((p) => p.id !== id);
     });
+  }, []);
+
+  const addDeposit = useCallback((amount: number, mode: AccountType, sourceLabel: string, lockedEndDate?: string) => {
+    if (amount <= 0) return;
+    setWallet((w) => ({
+      ...w,
+      [mode]: w[mode] + amount,
+      total: w.total + amount,
+    }));
+    setTransactions((t) => [
+      ...t,
+      {
+        id: `tx-${Date.now()}`,
+        type: 'deposit',
+        amount,
+        mode,
+        status: 'completed' as const,
+        timestamp: new Date().toISOString(),
+        sourceNumber: sourceLabel,
+      },
+    ]);
+    if (mode === 'locked' && lockedEndDate) {
+      setSettings((s) => ({ ...s, lockedEndDate }));
+    }
   }, []);
 
   const addTransaction = useCallback((tx: SavingsTransaction) => {
@@ -166,6 +192,7 @@ export function SavingsProvider({ children }: { children: React.ReactNode }) {
         settings,
         addPendingSavings,
         completePendingSavings,
+        addDeposit,
         addTransaction,
         withdraw,
         isLockedDue,

@@ -15,7 +15,7 @@ export default function PinVerifyScreen() {
     mode?: string;
     lockedEndDate?: string;
   }>();
-  const { verifyPin } = useAuth();
+  const { verifyPin, setBalanceRevealed } = useAuth();
   const { completePendingSavings, withdraw } = useSavings();
   const [error, setError] = useState('');
   const [retryKey, setRetryKey] = useState(0);
@@ -28,7 +28,10 @@ export default function PinVerifyScreen() {
       return;
     }
     setError('');
-    if (pendingId) {
+    if (action === 'reveal') {
+      setBalanceRevealed(true);
+      router.back();
+    } else if (pendingId) {
       const accountMode = (mode === 'locked' ? 'locked' : 'flexible') as 'locked' | 'flexible';
       completePendingSavings(pendingId, accountMode, lockedEndDate);
       router.back();
@@ -43,11 +46,13 @@ export default function PinVerifyScreen() {
   };
 
   const subtitle =
-    action === 'withdraw' && amount
-      ? `Confirm withdrawal of ${amount}`
-      : pendingId
-        ? 'Complete your savings'
-        : undefined;
+    action === 'reveal'
+      ? 'Enter PIN to reveal balance'
+      : action === 'withdraw' && amount
+        ? `Confirm withdrawal of ${amount}`
+        : pendingId
+          ? 'Complete your savings'
+          : undefined;
 
   return (
     <View style={styles.container}>

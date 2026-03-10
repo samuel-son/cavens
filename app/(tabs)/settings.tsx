@@ -22,7 +22,7 @@ export default function SettingsScreen() {
   const colorScheme = useColorScheme();
   const c = Colors[colorScheme ?? 'light'];
   const { settings, updateSettings } = useSavings();
-  const { clearPin } = useAuth();
+  const { signOut } = useAuth();
 
   return (
     <ScrollView
@@ -149,9 +149,9 @@ export default function SettingsScreen() {
         title="Sign Out"
         icon="logout"
         variant="outline"
-        onPress={async () => {
-          await clearPin();
-          router.replace('/');
+        onPress={() => {
+          signOut();
+          router.replace('/welcome');
         }}
       />
     </ScrollView>
